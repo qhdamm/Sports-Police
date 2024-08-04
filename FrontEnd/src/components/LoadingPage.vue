@@ -10,22 +10,33 @@
   <script>
   export default {
     methods: {
-      // 채점하기 버튼 클릭 시 OutputPage로 이동
-      goToOutputPage() {
-        // 쿼리 파라미터 예시로 임의의 값 설정
-        const exampleScore = 85;
-        const exampleImage = 'http://example.com/example-image.jpg';
-        const exampleText = 'Example result text';
-  
-        // OutputPage로 네비게이션
-        this.$router.push({
-          name: 'OutputPage',
-          query: {
-            score: exampleScore,
-            image: exampleImage,
-            text: exampleText
+      async goToOutputPage() {
+        try {
+          const response = await fetch('http://localhost:8000/analyze', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: this.$route.query.link }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-        });
+          const result = await response.json();
+
+          this.$router.push({
+            name: 'OutputPage',
+            query: {
+              score: result.score,
+              image: result.image_url,
+              text: result.text
+            }
+          });
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to analyze video. Please try again later.');
+        }
       }
     }
   }

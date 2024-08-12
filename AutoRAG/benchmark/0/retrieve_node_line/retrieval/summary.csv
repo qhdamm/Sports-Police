@@ -1,0 +1,6 @@
+filename,module_name,module_params,execution_time,retrieval_f1,retrieval_ndcg,retrieval_map,is_best
+0.parquet,vectordb,"{'top_k': 3, 'embedding_model': 'openai'}",0.038902848958969116,0.375,0.40289966439732416,0.2864583333333333,False
+1.parquet,bm25,{'top_k': 3},0.0076610371470451355,0.28125,0.4694912191964322,0.4375,True
+2.parquet,hybrid_rrf,"{'top_k': 3, 'weight': 4.0, 'target_modules': ('vectordb', 'bm25'), 'target_module_params': ({'top_k': 3, 'embedding_model': 'openai'}, {'top_k': 3})}",0.04656388610601425,0.234375,0.2827324383928644,0.21875,False
+3.parquet,hybrid_cc,"{'top_k': 3, 'normalize_method': 'mm', 'weight': 0.0, 'target_modules': ('vectordb', 'bm25'), 'target_module_params': ({'top_k': 3, 'embedding_model': 'openai'}, {'top_k': 3})}",0.04656388610601425,0.28125,0.4694912191964322,0.4375,False
+4.parquet,hybrid_cc,"{'top_k': 3, 'normalize_method': 'tmm', 'weight': 0.0, 'target_modules': ('vectordb', 'bm25'), 'target_module_params': ({'top_k': 3, 'embedding_model': 'openai'}, {'top_k': 3})}",0.04656388610601425,0.28125,0.4694912191964322,0.4375,False

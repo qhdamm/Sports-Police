@@ -1,23 +1,45 @@
+import requests
 from fastapi import APIRouter, HTTPException
-from app.schemas import YouTubeLink, AnalysisResult
+from fastapi.responses import HTMLResponse
 
+from app.schemas import YouTubeLink, AnalysisResult, QAResults
+from app.process_video import download_video
 router = APIRouter()
+MODEL_SERVER_URL = "http://~"
+
 
 @router.post("/analyze", response_model=AnalysisResult)
 async def analyze_youtube_video(youtube_link: YouTubeLink):
     try:
-        # video_path: url로 다운받은 동영상 파일 경로
-        # score, analysis_text: 모델 비디오 분석 결과
-        # image_url: 모델 이미지 생성 결과
         
-        score = 200
-        image_url = "http://example.com/example-image.jpg"
-        analysis_text = "Example"
+        #video_path = download_video(youtube_link.url)
+        video_path = "/Users/kjinh/Desktop/sports-police/BackEnd/app/test.mp4"
+        files = {'file': open(video_path, 'rb')}
+        # response = requests.post(MODEL_SERVER_URL, files=files)
         
-        return AnalysisResult(
-            score=score,
-            image_url=image_url,
-            text=analysis_text
-        )
+        # if response.status_code == 200:
+        #     model_report = response.content
+        #     return AnalysisResult(report=model_report)
+        # else:
+        #     raise HTTPException(status_code=500, detail="Model server error")
+        
+        with open("/Users/kjinh/Desktop/sports-police/diving2_report.html", "rb") as f:
+            response = f.read()
+        return AnalysisResult(report=response)
+        
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+@router.post("/qa", response_model=QAResults)
+async def qa_with_res():
+    try:
+        
+        # TODO
+        res_from_gpt = "Hello Worlds!"
+        return QAResults(answer=res_from_gpt)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+

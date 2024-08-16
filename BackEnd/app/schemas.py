@@ -2,8 +2,11 @@ from pydantic import BaseModel
 
 class YouTubeLink(BaseModel):
     url: str
+    gt_score: int
 
 class AnalysisResult(BaseModel):
-    score: int
-    image_url: str
-    text: str
+    report: bytes # html report of model output
+
+
+class QAResults(BaseModel):
+    answer: str

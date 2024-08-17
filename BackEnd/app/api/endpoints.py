@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import HTMLResponse
 
 from app.schemas import YouTubeLink, AnalysisResult, QAResults
-from app.process_video import download_video
+from app.process_video import download_clip
 router = APIRouter()
 MODEL_SERVER_URL = "http://~"
 
@@ -12,8 +12,7 @@ MODEL_SERVER_URL = "http://~"
 async def analyze_youtube_video(youtube_link: YouTubeLink):
     try:
         
-        #video_path = download_video(youtube_link.url)
-        video_path = "/Users/kjinh/Desktop/sports-police/BackEnd/app/test.mp4"
+        video_path = download_clip(youtube_link.url, youtube_link.start_time, youtube_link.end_time)
         files = {'file': open(video_path, 'rb')}
         # response = requests.post(MODEL_SERVER_URL, files=files)
         

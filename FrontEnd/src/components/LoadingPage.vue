@@ -34,7 +34,7 @@
             },
             body: JSON.stringify({ 
               url: youtubeLink,
-              gt_score: groundTruthScore ? parseInt(groundTruthScore) : null,
+              gt_score: groundTruthScore ? parseFloat(groundTruthScore) : null,
               start_time: startTime || "FULL_VIDEO",
               end_time: endTime || "FULL_VIDEO"
             }),
@@ -51,6 +51,7 @@
           this.$router.push({ // Push to OutputPage with the result
             name: 'OutputPage',
             query: {
+              gt_score: result.gt_score,
               report: result.report
             }
           });

@@ -9,8 +9,8 @@ def download_clip(youtube_url, start_time, end_time, save_path="./video_download
 
     Args:
         youtube_url : string of the youtube video url to download
-        start_time : string of the start time of the clip in the format "HH:MM:SS"
-        end_time : string of the end time of the clip in the format "HH:MM:SS"
+        start_time : string of the start time of the clip in the format "MM:SS"
+        end_time : string of the end time of the clip in the format "MM:SS"
         save_path (optional): string of the path to save the clip. Default is "./video_downloads".
         
     Returns:
@@ -40,6 +40,7 @@ def download_clip(youtube_url, start_time, end_time, save_path="./video_download
         output_file = f"{save_path}/clip_{start_time.replace(':','')}_{end_time.replace(':','')}.mp4"
         ffmpeg_command = [
             ffmpeg.get_ffmpeg_exe(),
+            '-y', # overwrite output file if it exists
             '-i', video_file,
             '-ss', start_time,
             '-to', end_time,

@@ -24,7 +24,10 @@ async def analyze_youtube_video(youtube_link: YouTubeLink):
         
         with open("/Users/kjinh/Desktop/sports-police/diving2_report.html", "rb") as f:
             response = f.read()
-        return AnalysisResult(report=response)
+        return AnalysisResult(
+            gt_score=youtube_link.gt_score,
+            report=response
+            )
         
         
     except Exception as e:

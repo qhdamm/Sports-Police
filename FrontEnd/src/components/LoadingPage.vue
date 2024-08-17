@@ -19,11 +19,13 @@
 
           const youtubeLink = this.$route.query.link;
           const groundTruthScore = this.$route.query.gt_score;
+          const startTime = this.$route.query.start_time;
+          const endTime = this.$route.query.end_time;
 
           if (!youtubeLink) {
             throw new Error('YouTube link is missing.');
           }
-          console.log("reach here");
+
           // send a POST request to the backend
           const response = await fetch('http://localhost:8000/analyze', {
             method: 'POST',
@@ -32,7 +34,9 @@
             },
             body: JSON.stringify({ 
               url: youtubeLink,
-              gt_score: groundTruthScore ? parseInt(groundTruthScore) : null
+              gt_score: groundTruthScore ? parseInt(groundTruthScore) : null,
+              start_time: startTime || "FULL_VIDEO",
+              end_time: endTime || "FULL_VIDEO"
             }),
           });
 

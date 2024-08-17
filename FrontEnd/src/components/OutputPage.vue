@@ -1,6 +1,12 @@
 <template>
     <div>
       <h1>SGYUNG 당신의 AI 스포츠 심판</h1>
+
+      <!-- GT score -->
+      <div v-if="gtScore !== null">
+        <h2>Ground Truth Score: {{ gtScore }}</h2>
+      </div>
+
       <div v-html="report"></div>
       <!-- 추가 질문을 위한 섹션 -->
       <div v-if="qaEnabled">
@@ -22,6 +28,7 @@
   export default {
     data() {
       return {
+        gtScore: null,  // Ground Truth Score
         report: null, // 모델의 HTML report
         question: '',
         answer: '',
@@ -29,6 +36,7 @@
       };
     },
     created() {
+      this.gtScore = this.$route.query.gt_score !== undefined ? parseFloat(this.$route.query.gt_score) : null;
       this.report = this.$route.query.report;
     },
     methods: {

@@ -2,7 +2,7 @@
     <div>
       <h1>SGYUNG 당신의 AI 스포츠 심판</h1>
       <input v-model="youtubeLink" placeholder="Enter YouTube link" />
-      <input v-model.number="groundTruthScore" type="number" placeholder="Enter Ground Truth Score (Optional)" />
+      <input v-model.number="groundTruthScore" type="number" step="0.1" placeholder="Enter Ground Truth Score (Optional, float)" />
       
       <div class="time-buttons">
         <input v-model="startTime" type="text" placeholder="Enter Start Time (Optional, e.g. 01:30)" />

@@ -14,6 +14,9 @@ import base64
 from pathlib import Path
 import torch
 import gradio as gr
+import chromadb
+import uuid
+import pandas as pd
 
 ############ Generate GIF functions ###################################################################################
 def generate_gif(local_directory, image_names, speed_factor=1, loop=0):
@@ -145,7 +148,7 @@ def draw_splash(opencv_image, pred_mask):
 
 def generate_report(template_path, data, local_directory, progress=gr.Progress()):
     # Load the template environment
-    env = Environment(loader=FileSystemLoader('./score_report_generation/templates'))
+    env = Environment(loader=FileSystemLoader('./NSAQA/score_report_generation/templates'))
 
     file_names = os.listdir(local_directory)
     file_names.sort()
@@ -314,12 +317,15 @@ def generate_report(template_path, data, local_directory, progress=gr.Progress()
     }
     # Render the template with the provided data
     report_content = template.render(data)
-    return report_content
+    table_id = str(uuid.uuid4())
+    report_df = pd.DataFrame(data)
+    report_df.to_csv(f"./NSAQA/tables/{table_id}.csv", index=False)
+    return report_content, report_df, table_id
 
 
 def generate_report_from_frames(template_path, data, frames):
     # Load the template environment
-    env = Environment(loader=FileSystemLoader('./score_report_generation/templates'))
+    env = Environment(loader=FileSystemLoader('./NSAQA/score_report_generation/templates'))
 
     frames = np.array(frames)
     # Load the template
@@ -486,11 +492,13 @@ def generate_report_from_frames(template_path, data, frames):
     }
     # Render the template with the provided data
     report_content = template.render(data)
-    return report_content
+    table_id = str(uuid.uuid4())
+
+    return report_content, table_id
 
 def generate_symbols_report(template_path, dive_data, frames):
     # Load the template environment
-    env = Environment(loader=FileSystemLoader('./score_report_generation/templates'))
+    env = Environment(loader=FileSystemLoader('./NSAQA/score_report_generation/templates'))
     template = env.get_template(template_path)
     pose_frames = []
     for i in range(len(dive_data['pose_pred'])):
@@ -513,7 +521,7 @@ def generate_symbols_report_precomputed(template_path, dive_data, local_director
     else:
         above_boards = [None] * len(file_names)
 
-    env = Environment(loader=FileSystemLoader('./score_report_generation/templates'))
+    env = Environment(loader=FileSystemLoader('./NSAQA/score_report_generation/templates'))
     template = env.get_template(template_path)
     pose_frames = []
     counter = 0

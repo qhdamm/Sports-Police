@@ -108,7 +108,7 @@ TRAIN:
   NESTEROV: false
 TEST:
   BATCH_SIZE_PER_GPU: 64
-  MODEL_FILE: './models/pose_estimator/model_weights/diver_pose_model_best.pth'
+  MODEL_FILE: './NSAQA/models/pose_estimator/model_weights/diver_pose_model_best.pth'
   FLIP_TEST: true
   POST_PROCESS: true
   SHIFT_HEATMAP: true

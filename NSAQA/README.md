@@ -1,8 +1,3 @@
-못 넣은 것
-1. model weights -> 다운 받아서 쓰세요
-2. cocoapi
-3. ffmeg
-
 # Neuro-Symbolic AQA (NS-AQA) 
 ## 🏆 CVPR 2024 CVSports Best Paper Award
 This repository contains the Python code implementation of NS-AQA for platform diving.

@@ -301,7 +301,7 @@ def get_position_from_diveNum(dive_data):
         return None
 
 def get_all_report_scores(dive_data):
-    with open('/root/NSAQA/rule_based_programs/distribution_data.pkl', 'rb') as f:
+    with open('./NSAQA/rule_based_programs/distribution_data.pkl', 'rb') as f:
         distribution_data = pickle.load(f)
      ## handstand and som_count##
     expected_som, handstand = som_counter_full_dive(dive_data)

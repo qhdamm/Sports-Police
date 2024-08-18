@@ -27,7 +27,7 @@ import torchvision
 import cv2
 import numpy as np
 import time
-sys.path.append('./deep-high-resolution-net.pytorch/lib')
+sys.path.append('./NSAQA/deep-high-resolution-net.pytorch/lib')
 import models
 from config import cfg
 from config import update_config
@@ -79,7 +79,7 @@ def box_to_center_scale(box, model_image_width, model_image_height):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train keypoints network')
-    parser.add_argument('--cfg', type=str, default='./models/pose_estimator/cfg/w32_256x256_adam_lr1e-3.yaml')
+    parser.add_argument('--cfg', type=str, default='./NSAQA/models/pose_estimator/cfg/w32_256x256_adam_lr1e-3.yaml')
     parser.add_argument('opts',
                         help='Modify config options using the command-line',
                         default=None,

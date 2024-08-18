@@ -62,6 +62,10 @@ def create_prompt(df, query):
     Please answer in detail, referring to the provided document.
     document content:
     {documents_content}
+    Gather the details as thorouhly as possible, then categorize them according to the following format:
+    - Fact: { }
+    - Your opinion: { }
+    Please explain each item in one or two sentences.
     """
 
     user_message = f"""User question: "{str(query)}". """

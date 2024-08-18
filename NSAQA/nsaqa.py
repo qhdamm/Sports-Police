@@ -22,6 +22,7 @@ def main(video_path):
     diver_detector = get_diver_detector()
     pose_model = get_pose_model()
     template_path = 'report_template_tables.html'
+    summary_template_path = 'report_summary_template_table.html'
     dive_data = {}
 
     frames = extract_frames(video_path)
@@ -29,26 +30,30 @@ def main(video_path):
     dive_data = aqa_metaprogram(frames, dive_data, platform_detector=platform_detector, splash_detector=splash_detector, diver_detector=diver_detector, pose_model=pose_model)
     intermediate_scores = get_all_report_scores(dive_data)
     html, html_id = generate_report_from_frames(template_path, intermediate_scores, frames)
+    summary_html, summary_html_id = generate_report_from_frames(summary_template_path, intermediate_scores, frames)
 
     import os
     # Define the save path
     save_directory = "./output"
-    save_path = os.path.join(save_directory, "{}_report.html".format("".join(video_path.split('.')[:-1])))
+    
+    # Save the main HTML report
+    save_path_html = os.path.join(save_directory, "{}_report.html".format("".join(video_path.split('.')[:-1])))
     if not os.path.exists(save_directory):
         os.makedirs(save_directory)
-
+    
     # Save the HTML report
-    with open(save_path, 'w') as f:
-        print("saving html report into " + save_path)
+    with open(save_path_html, 'w') as f:
+        print("Saving HTML report into " + save_path_html)
         f.write(html)
-
-    return html_id, save_path
+    
+    save_path_summary_html = os.path.join(save_directory, "{}_summary_report.html".format("".join(video_path.split('.')[:-1])))
+    with open(save_path_summary_html, 'w') as f:
+        print("Saving summary HTML report into " + save_path_summary_html)
+        f.write(summary_html)
+        
+    return html_id, save_path_html, summary_html_id, save_path_summary_html
 
     
-
-
-
-
 
     
 

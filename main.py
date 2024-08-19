@@ -22,15 +22,11 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 new_parser = argparse.ArgumentParser(description="Extract dive data to be used for scoring.")
 new_parser.add_argument("video_path", type=str, help="Path to dive video (mp4 format).")
-# difficulty 추가 부분
-new_parser.add_argument("difficulty", type=float)
 new_parser.add_argument("-d", "--html_info_delete", action="store_true")
 meta_program_args = new_parser.parse_args()
 
 video_path = meta_program_args.video_path
-# difficulty 추가 부분
-difficulty = meta_program_args.difficulty
-html_id, save_path_html, summary_html_id, save_path_summary_html = nsaqa_main(video_path, difficulty)
+html_id, save_path_html, summary_html_id, save_path_summary_html = nsaqa_main(video_path)
 with open(save_path_html, 'r') as file:
     html_content = file.read()
 

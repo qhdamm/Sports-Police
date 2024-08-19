@@ -41,6 +41,30 @@ def extract_frames(video_path):
     cap.release()
     return frames
 
+def extract_frames_ocr(video_path):
+    cap = cv2.VideoCapture(video_path)
+    # Check if the video file is opened successfully
+    if not cap.isOpened():
+        print("Error: Couldn't open video file.")
+        exit()
+    frame_skip = 1
+    # a variable to keep track of the frame to be saved
+    frame_count = 0
+    ocr_frames = []
+    i = 0
+    while True:
+        ret, ocr_frame = cap.read()
+        if not ret: 
+            break
+        if i > frame_skip - 1:
+            frame_count += 1
+            ocr_frames.append(ocr_frame)
+            i = 0
+            continue
+        i += 1
+    cap.release()
+    return ocr_frames
+
 def getDiveInfo_from_diveNum(diveNum):
     handstand = (diveNum[0] == '6')
     expected_som = int(diveNum[2])
@@ -183,6 +207,26 @@ def abstractSymbols(frames, progress=gr.Progress(), platform_detector=None, spla
 
     return dive_data
 
+#difficulty 시작
+import easyocr
+
+reader = easyocr.Reader(['en']) #모델 불러오기
+
+def add_difficulty(frames, dive_data):
+    for frame in frames:
+        frame = np.flip(frame, (0,1))
+        ocr_result = reader.readtext(frame) #ocr 진행
+        print("ocr_result",ocr_result)
+        for i in range(len(ocr_result)):
+            if ocr_result[i][1].upper()=='DIFFICULTY':  #difficulty가 발견이 되면
+                difficulty_score = float(ocr_result[i+1][1])
+                dive_data['difficulty'] = difficulty_score   #difficulty 다음에 ocr된 점수를 data에 넣는다
+                print("difficulty:", dive_data['difficulty'])
+                return dive_data
+    print("difficulty가 발견이 되지 않았습니다.")
+    return dive_data
+
+
 def aqa_metaprogram(frames, dive_data, progress=gr.Progress(), diveNum="", board_side=None, platform_detector=None, splash_detector=None, diver_detector=None, pose_model=None):
     print("AQA Metaprogram...")
     if len(frames) != len(dive_data['pose_pred']):
@@ -312,12 +356,14 @@ if __name__ == '__main__':
 
     video_path = meta_program_args.video_path
     frames = extract_frames(video_path)
+    ocr_frames = extract_frames_ocr(video_path)
     platform_detector = get_platform_detector()
     splash_detector = get_splash_detector()
     diver_detector = get_diver_detector()
     pose_model = get_pose_model()
 
     dive_data = abstractSymbols(frames, platform_detector=platform_detector, splash_detector=splash_detector, diver_detector=diver_detector, pose_model=pose_model)
+    dive_data = add_difficulty(ocr_frames, dive_data)
     dive_data = aqa_metaprogram(frames, dive_data, platform_detector=platform_detector, splash_detector=splash_detector, diver_detector=diver_detector, pose_model=pose_model)
 
 #TODO

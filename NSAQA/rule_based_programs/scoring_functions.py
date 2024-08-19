@@ -300,8 +300,7 @@ def get_position_from_diveNum(dive_data):
     else:
         return None
 
-# difficulty 추가 부분
-def get_all_report_scores(dive_data, difficulty):
+def get_all_report_scores(dive_data):
     with open('./NSAQA/rule_based_programs/distribution_data.pkl', 'rb') as f:
         distribution_data = pickle.load(f)
      ## handstand and som_count##
@@ -513,7 +512,8 @@ def get_all_report_scores(dive_data, difficulty):
     # Completely failed:  	0  
     overall_score = np.mean(all_percentiles) * 10
     intermediate_scores['overall_score'] = {}
-    # difficulty 추가 부분
+    # difficulty 추가 부분 
+    difficulty = dive_data['difficulty']
     intermediate_scores['overall_score']['raw_score'] = overall_score * difficulty * 3
     '''
     3을 곱하는 이유

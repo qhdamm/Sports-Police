@@ -54,7 +54,7 @@ def generate_embeddings(text):
 class ChromaDBHandler:
     def __init__(self):
         self.client_db = chromadb.Client(Settings())
-        self.collection = self.client_db.get_or_create_collection("report_tables")
+        self.collection = self.client_db.get_or_create_collection(name="report_tables",metadata={"hnsw:space": "cosine"})
 
     def store_embedding(self, document_id, text_content, embedding):
         # Ensure text_content is a string and embedding is a list of floats
@@ -73,9 +73,9 @@ class ChromaDBHandler:
         results = self.collection.query(
             query_embeddings=[query_embedding.tolist()],
             n_results=top_k,
-            include=["metadatas", "distances"]
+            include=["metadatas"]
         )
-        return results['metadatas'], results['distances']
+        return results['metadatas']
     
     def delete_document(self, document_id):
         # Delete the document with the given document_id from the collection
@@ -148,7 +148,7 @@ def store_pdf(pdf_path, db_handler):
         db_handler.collection = client_db.get_collection(collection_name)
         print(f"Collection '{collection_name}' already exists. Using existing collection.")
     except:
-        db_handler.collection = client_db.create_collection(collection_name)
+        db_handler.collection = client_db.create_collection(name=collection_name, metadata={"hnsw:space": "cosine"})
         print(f"Collection '{collection_name}' does not exist. Creating new collection.")
 
 

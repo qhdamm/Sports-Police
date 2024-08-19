@@ -21,7 +21,7 @@ The service will then process the video through a series of steps:
 1. **OCR for Difficulty Identification**
 2. **Video Analysis and Score Prediction**
 3. **RAG-based Q&A**
-   RAG is 
+
 
 <p align="center"><img src="assets/diagram.svg" alt="Pipeline" width="80%" /></p>
 

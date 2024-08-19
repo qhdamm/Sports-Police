@@ -514,14 +514,13 @@ def get_all_report_scores(dive_data, difficulty):
     overall_score = np.mean(all_percentiles) * 10
     intermediate_scores['overall_score'] = {}
     # difficulty 추가 부분
-    intermediate_scores['overall_score']['raw_score'] = overall_score * difficulty * 4.5
+    intermediate_scores['overall_score']['raw_score'] = overall_score * difficulty * 3
     '''
     3을 곱하는 이유
     올림픽 다이빙 개인전은 심판 7명으로 구성되어 있다
     심판이 7명으로 구성된 경우 최고/최하 각각 2개를 제외하고 중간 점수 3개만을 합산한다.
     그 후 난이도(difficulty)를 곱하여 최종 점수를 계산한다.
     따라서 3명의 심판이 모두 'overall_score'를 주었다고 가정하고 3을 곱한다.
-    ->를 하려고 했지만 너무 실제랑 차이가 많이 나서 4.5 곱하게 되었습니다.
     '''
     if overall_score == 10:
         intermediate_scores['overall_score']['description'] = 'excellent'

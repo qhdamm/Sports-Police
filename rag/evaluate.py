@@ -51,7 +51,6 @@ def generate_response(query_text, db_handler, context):
 
 if __name__ == "__main__":
     db_handler = ChromaDBHandler()
-    db_handler.reset_chroma_db()
     pdf_path = './data/Competition-Regulations.pdf'
     store_pdf(pdf_path, db_handler)
     with open('./data/diving2_report.html', 'r') as file:
@@ -77,7 +76,7 @@ if __name__ == "__main__":
     answers=[]; contexts=[]
     # inference
     for query in eval_questions:
-        context_retrieved , _ = db_handler.retrieve_similar(generate_embeddings(query))
+        context_retrieved = db_handler.retrieve_similar(generate_embeddings(query))
         context = " ".join([doc['text'] for doc in context_retrieved[0]])
         contexts.append([context])
         answers.append(generate_response(query, db_handler, context))

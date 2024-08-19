@@ -13,6 +13,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from chromadb.config import Settings
 import openai
+from openai import OpenAI
 import numpy as np
 import os
 from dotenv import load_dotenv
@@ -20,65 +21,46 @@ from sentence_transformers import SentenceTransformer
 from rag_utils import *
 from datasets import Dataset
 
-client = chromadb.PersistentClient()
+client_db = chromadb.PersistentClient()
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-
-# 섹션 제목 리스트 정의
-section_titles = [
-    "GENERAL", "COMPETITIONS", "COMPETITION FORMAT", "STATEMENT OF DIVES",
-    "COMPETITION PROCEDURE", "DUTIES OF THE REFEREE AND ASSISTANT REFEREES",
-    "DUTIES OF THE SECRETARIAT", "JUDGING", 
-    "REFEREEING AND JUDGING SYNCHRONISED DIVING",
-    "SUMMARY OF THE PENALTIES", 
-    "DIVING AT THE WORLD AQUATICS CHAMPIONSHIPS AND OLYMPIC GAMES",
-    "AGE GROUP RULES - DIVING", "DIVING FACILITIES AND EQUIPMENT",
-    "MEDICAL AND SAFETY SPECIFIC REQUIREMENT FOR DIVING"
-]
-
-pdf_path = './data/Competition-Regulations.pdf'
-sections = split_pdf_by_section_titles(pdf_path, section_titles)
-
-# 텍스트 임베딩 생성
-model = SentenceTransformer('all-MiniLM-L6-v2') # 임베딩 모델 로드
-
-# PDF에서 추출한 텍스트 임베딩 생성
-sections = split_pdf_by_section_titles(pdf_path, section_titles)
-embeddings = model.encode(sections)
-
-# 2. 고정 데이터: 컬렉션 생성 또는 가져오기
-collection = client.get_or_create_collection("pdf_collection") # 고정 데이터 
-
-# 임베딩된 텍스트를 컬렉션에 추가
-for i, section in enumerate(sections):
-    collection.add(
-        documents=[section],
-        embeddings=[embeddings[i].tolist()],  # 임베딩을 리스트로 변환
-        ids=[f"pdf_section_{i}"]
-    )
     
 def generate_response(query_text, db_handler, context):
     # Generate embedding for the query
     query_embedding = generate_embeddings(query_text)
 
     # Generate a response using OpenAI's language model
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": f"Context: {context}\n\nQuery: {query_text}"}
-        ],
+        messages = [
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", 
+                    "content": f"Respond to the following given topic. Gather the details as thoroughly as possible, then categorize them according to the following format. Give me the response in one or two sentences.:\n\n\
+                                - Fact: {{ }}\n\
+                                - Your opinion: {{ }}\n\n\
+                                - Topic: {context}. {query_text}"}
+                ]
+,
         max_tokens=1500,
         temperature=0.7
     )
     
-    return response['choices'][0]['message']['content'].strip()
-
+    return response.choices[0].message.content
     
 
 if __name__ == "__main__":
-    
+    db_handler = ChromaDBHandler()
+    db_handler.reset_chroma_db()
+    pdf_path = './data/Competition-Regulations.pdf'
+    store_pdf(pdf_path, db_handler)
+    with open('./data/diving2_report.html', 'r') as file:
+        html_content = file.read()
+    text_content = extract_text_from_html(html_content)
+    embedding = generate_embeddings(text_content)
+    db_handler.store_embedding(document_id="0", text_content=text_content, embedding=embedding)
+    print("Document stored successfully.")
+
     eval_questions = [
                 'How is diving scored?',
                 'I think the score is too low, why?',
@@ -94,11 +76,9 @@ if __name__ == "__main__":
                 ]
     answers=[]; contexts=[]
     # inference
-    db_handler = ChromaDBHandler()
     for query in eval_questions:
         context_retrieved , _ = db_handler.retrieve_similar(generate_embeddings(query))
         context = " ".join([doc['text'] for doc in context_retrieved[0]])
-        print(context)
         contexts.append([context])
         answers.append(generate_response(query, db_handler, context))
     data = {
@@ -117,6 +97,7 @@ if __name__ == "__main__":
             answer_relevancy,
         ]
     )
-    
     df = result.to_pandas()
-    print(df)
+    print(result)
+    print(df['answer'][0])
+    print(df['answer'][1])

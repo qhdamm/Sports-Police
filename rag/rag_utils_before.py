@@ -46,44 +46,6 @@ def extract_text_from_html(html_content):
     soup = BeautifulSoup(html_content, 'html.parser')
     return soup.get_text()
 
-def preprocess_text(text): # 추가 
-    text = text.replace('\n', '')
-    text = text.replace('ErrorDescriptionVisualsScore', '')
-    
-    load_dotenv()
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    response = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",  # Or use the latest available model
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": f"Please extract meaningful content from the following text. Include additional details regarding the score, such as specific explanations like 'Your jump was a bit on the lower side.' Do not include percentile and just score like 2.6.:\n\n{text}"}
-    ],
-    max_tokens=1500,  # Adjust as needed
-    temperature=0.7  # Adjust as needed for creativity
-    )
-    text = response.choices[0].message['content'].strip() 
-    
-    lines = text.strip().split('\n')  # Split the text by lines and remove unnecessary symbols
-    data = []
-    for line in lines:
-        # Remove bullet points, asterisks, parentheses, and excess spaces
-        line = re.sub(r'^-+', '', line).strip()  # Remove leading bullet points
-        line = re.sub(r'\*\*', '', line)  # Remove bold asterisks
-        line = re.sub(r'\(.*?\)', '', line)  # Remove parentheses and their content
-        line = re.sub(r':', '.', line)  # Replace colons with periods
-        data.append(line.strip())
-
-    df = pd.DataFrame(data, columns=['text'])
-    df_cleaned = df[df['text'].str.strip() != '']
-    df_cleaned = df_cleaned.dropna(subset=['text'])
-    df = df_cleaned 
-    df = df.reset_index(drop=True)
-    
-    # text 열 string으로 추출
-    text = df['text'].str.cat(sep=' ')
-    return text
-    
-
 def generate_embeddings(text):
     model = SentenceTransformer('paraphrase-mpnet-base-v2') 
     embeddings = model.encode([text])
@@ -92,7 +54,7 @@ def generate_embeddings(text):
 class ChromaDBHandler:
     def __init__(self):
         self.client_db = chromadb.Client(Settings())
-        self.collection = self.client_db.get_or_create_collection("report_tables")
+        self.collection = self.client_db.get_or_create_collection(name="report_tables",metadata={"hnsw:space": "cosine"})
 
     def store_embedding(self, document_id, text_content, embedding):
         # Ensure text_content is a string and embedding is a list of floats
@@ -111,9 +73,9 @@ class ChromaDBHandler:
         results = self.collection.query(
             query_embeddings=[query_embedding.tolist()],
             n_results=top_k,
-            include=["metadatas", "distances"]
+            include=["metadatas"]
         )
-        return results['metadatas'], results['distances']
+        return results['metadatas']
     
     def delete_document(self, document_id):
         # Delete the document with the given document_id from the collection
@@ -186,7 +148,7 @@ def store_pdf(pdf_path, db_handler):
         db_handler.collection = client_db.get_collection(collection_name)
         print(f"Collection '{collection_name}' already exists. Using existing collection.")
     except:
-        db_handler.collection = client_db.create_collection(collection_name)
+        db_handler.collection = client_db.create_collection(name=collection_name, metadata={"hnsw:space": "cosine"})
         print(f"Collection '{collection_name}' does not exist. Creating new collection.")
 
 

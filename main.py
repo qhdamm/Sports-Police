@@ -40,7 +40,8 @@ db_handler = ChromaDBHandler()
 pdf_path = './rag/data/Competition-Regulations.pdf'
 store_pdf(pdf_path, db_handler)
 ## html file -> db
-text_content = extract_text_from_html(html_content)
+text_content = extract_text_from_html(html_content) 
+text_content = preprocess_text(text_content) # 추가 
 embedding = generate_embeddings(text_content)
 db_handler.store_embedding(html_id, text_content, embedding)
 print("Document stored successfully.")

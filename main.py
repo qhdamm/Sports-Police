@@ -9,7 +9,7 @@ import fitz  # PyMuPDF
 from sentence_transformers import SentenceTransformer
 import re
 import pandas as pd
-from rag_utils import *
+from rag.rag_utils import *
 from NSAQA.nsaqa import main as nsaqa_main
 
 
@@ -58,10 +58,14 @@ new_parser = argparse.ArgumentParser(description="Extract dive data to be used f
 new_parser.add_argument("video_path", type=str, help="Path to dive video (mp4 format).")
 new_parser.add_argument("-d", "--html_info_delete", action="store_true")
 meta_program_args = new_parser.parse_args()
+
 video_path = meta_program_args.video_path
 document_id, save_path = nsaqa_main(video_path)
 with open(save_path, 'r') as file:
     html_content = file.read()
+
+
+# Start RAG
 text_content = extract_text_from_html(html_content)
 embedding = generate_embeddings(text_content)
 db_handler = ChromaDBHandler()

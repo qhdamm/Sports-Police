@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 import openai
 
 
-def main(video_path):
+def main(video_path, difficulty):
     platform_detector = get_platform_detector()
     splash_detector = get_splash_detector()
     diver_detector = get_diver_detector()
@@ -28,7 +28,8 @@ def main(video_path):
     frames = extract_frames(video_path)
     dive_data = abstractSymbols(frames, platform_detector=platform_detector, splash_detector=splash_detector, diver_detector=diver_detector, pose_model=pose_model)
     dive_data = aqa_metaprogram(frames, dive_data, platform_detector=platform_detector, splash_detector=splash_detector, diver_detector=diver_detector, pose_model=pose_model)
-    intermediate_scores = get_all_report_scores(dive_data)
+    # difficulty 추가 부분
+    intermediate_scores = get_all_report_scores(dive_data, difficulty)
     html, html_id = generate_report_from_frames(template_path, intermediate_scores, frames)
     summary_html, summary_html_id = generate_report_from_frames(summary_template_path, intermediate_scores, frames)
 

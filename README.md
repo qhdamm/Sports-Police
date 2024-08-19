@@ -48,6 +48,6 @@ These metrics reflect the effectiveness and accuracy of our RAG system in genera
 @1nhye
 @chaehyun1
 @kjinh
-@qhdamm23 
+@qhdamm 
 @imsolsama
 @izayaki22

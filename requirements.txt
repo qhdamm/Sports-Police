@@ -4,6 +4,5 @@ PyMuPDF
 sentence-transformers
 datasets
 gradio
+easyocr
 git+https://github.com/facebookresearch/detectron2.git
-
-# also need ffmpeg

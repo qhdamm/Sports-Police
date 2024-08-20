@@ -214,7 +214,7 @@ reader = easyocr.Reader(['en']) #모델 불러오기
 
 def add_difficulty(frames, dive_data):
     for frame in frames:
-        frame = np.flip(frame, (0,1))
+        # frame = np.flip(frame, (0,1))
         ocr_result = reader.readtext(frame) #ocr 진행
         print("ocr_result",ocr_result)
         for i in range(len(ocr_result)):

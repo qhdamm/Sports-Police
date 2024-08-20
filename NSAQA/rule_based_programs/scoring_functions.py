@@ -215,7 +215,9 @@ def straightness_during_entry_score(dive_data):
     over_under_rotation = over_under_rotation_score(dive_data)
     if over_under_rotation is not None:
         frame = over_under_rotation[1]
-        index = entry_indices.index(frame) - 1
+        mask = ~np.isnan(straightness_during_entry.astype(float))
+        index = np.where(mask)[0][-1]
+        # index = entry_indices.index(frame) - 1
         if index < 0:
             index = 0
         return 180-straightness_during_entry[index], [frame-1, frame, frame + 1]

@@ -1,0 +1,3 @@
+filename,module_name,module_params,execution_time,average_prompt_token,prompt_maker_meteor,prompt_maker_rouge,prompt_maker_sem_score,is_best
+0.parquet,fstring,{'prompt': 'Read the passages and answer the given question. \\n Question: {query} \\n Passage: {retrieved_contents} \\n Answer :\n'},6.56619668006897e-05,375.46875,0.6809842103050705,0.644400035831451,0.9586099463366609,True
+1.parquet,fstring,{'prompt': 'Read the passages and answer the given question. Think step by step. \\n Question: {query} \\n Passage: {retrieved_contents} \\n Answer :\n'},3.709644079208374e-05,380.46875,0.6669091881683198,0.5754664248207582,0.9517564585508793,False

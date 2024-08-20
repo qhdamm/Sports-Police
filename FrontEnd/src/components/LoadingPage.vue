@@ -3,58 +3,80 @@
       <h1>SGYUNG 당신의 AI 스포츠 심판</h1>
       <p>Loading...</p>
       <!-- 채점하기 버튼 추가 -->
-      <button @click="goToOutputPage">채점하기</button>
+      <!-- <button @click="goToOutputPage">채점하기</button> -->
     </div>
   </template>
   
   <script>
   export default {
+    mounted() {
+      this.goToOutputPage();
+    },
+
     methods: {
-      // 채점하기 버튼 클릭 시 OutputPage로 이동
-      goToOutputPage() {
-        // 쿼리 파라미터 예시로 임의의 값 설정
-        const exampleScore = 85;
-        const exampleImage = 'http://example.com/example-image.jpg';
-        const exampleText = 'Example result text';
-  
-        // OutputPage로 네비게이션
-        this.$router.push({
-          name: 'OutputPage',
-          query: {
-            score: exampleScore,
-            image: exampleImage,
-            text: exampleText
+      async goToOutputPage() { // Analyze the video and push to OutputPage
+        try {
+
+          const youtubeLink = this.$route.query.link;
+          const groundTruthScore = this.$route.query.gt_score;
+          const startTime = this.$route.query.start_time;
+          const endTime = this.$route.query.end_time;
+
+          if (!youtubeLink) {
+            throw new Error('YouTube link is missing.');
           }
-        });
+
+          // send a POST request to the backend
+          const response = await fetch('http://localhost:8000/analyze', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              url: youtubeLink,
+              gt_score: groundTruthScore ? parseFloat(groundTruthScore) : null,
+              start_time: startTime || "FULL_VIDEO",
+              end_time: endTime || "FULL_VIDEO"
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const result = await response.json();
+
+
+          // Push to OutputPage with the result
+          this.$router.push({ // Push to OutputPage with the result
+            name: 'OutputPage',
+            query: {
+              gt_score: result.gt_score,
+              report: result.report
+            }
+          });
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to analyze video. Please try again later.');
+
+          // Redirect to InputPage
+          this.$router.push({ name: 'InputPage' });
+        }
       }
     }
   }
   </script>
   
   <style>
-  header {
-    background-color: #282c34;
-    padding: 20px;
-    color: white;
-    text-align: center;
-  }
-  
   h1 {
-    margin: 0;
+    text-align: center;
     font-size: 24px;
+    margin: 20px 0;
   }
   
   p {
     text-align: center;
     font-size: 20px;
-  }
-  
-  button {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
   }
   </style>
   

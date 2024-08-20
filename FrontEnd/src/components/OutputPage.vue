@@ -1,54 +1,91 @@
 <template>
     <div>
       <h1>SGYUNG 당신의 AI 스포츠 심판</h1>
-      <h2>Score: {{ score }}</h2>
-      <img :src="image" alt="Result Image" />
-      <p>{{ text }}</p>
+
+      <!-- GT score -->
+      <div v-if="gtScore !== null">
+        <h2>Ground Truth Score: {{ gtScore }}</h2>
+      </div>
+
+      <div v-html="report"></div>
+      <!-- 추가 질문을 위한 섹션 -->
+      <div v-if="qaEnabled">
+        <h2>Ask a Question:</h2>
+        <input v-model="question" placeholder="Enter your question here" />
+        <button @click="submitQuestion">Submit</button>
+
+        <p v-if="answer">Answer: {{ answer }}</p>
+      </div>
     </div>
   </template>
   
+
+
+
   <script>
+  import axios from "axios";
+
   export default {
     data() {
       return {
-        score: null,
-        image: null,
-        text: null
+        gtScore: null,  // Ground Truth Score
+        report: null, // 모델의 HTML report
+        question: '',
+        answer: '',
+        qaEnabled: true // 기본적으로 QA 기능 활성화
       };
     },
     created() {
-      this.score = this.$route.query.score;
-      this.image = this.$route.query.image;
-      this.text = this.$route.query.text;
+      this.gtScore = this.$route.query.gt_score !== undefined ? parseFloat(this.$route.query.gt_score) : null;
+      this.report = this.$route.query.report;
+    },
+    methods: {
+      async submitQuestion() {
+        try {
+          const response = await axios.post('http://localhost:8000/qa', {
+            question: this.question,
+          });
+          this.answer = response.data.answer;
+        } catch (error) {
+          console.error('Error: ', error);
+          alert('Failed to get an answer. Please try again later.');
+        }
+      }
     }
   };
   </script>
   
   <style>
-  header {
-    background-color: #282c34;
-    padding: 20px;
-    color: white;
-    text-align: center;
-  }
-  
   h1 {
-    margin: 0;
+    text-align: center;
     font-size: 24px;
+    margin: 20px 0;
   }
   
   h2 {
     text-align: center;
+    font-size: 22px;
   }
   
-  img {
+  input {
     display: block;
     margin: 20px auto;
+    padding: 10px;
+    font-size: 16px;
+    width: 80%;
+  }
+  
+  button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
   }
   
   p {
     text-align: center;
     font-size: 18px;
+    margin: 20px 0;
   }
   </style>
-  

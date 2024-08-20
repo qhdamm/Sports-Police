@@ -1,0 +1,4 @@
+node_line_name,node_type,best_module_filename,best_module_name,best_module_params,best_execution_time
+retrieve_node_line,retrieval,1.parquet,bm25,{'top_k': 3},0.0076610371470451
+post_retrieve_node_line,prompt_maker,0.parquet,fstring,{'prompt': 'Read the passages and answer the given question. \\n Question: {query} \\n Passage: {retrieved_contents} \\n Answer :\n'},6.56619668006897e-05
+post_retrieve_node_line,generator,1.parquet,openai_llm,"{'llm': 'gpt-3.5-turbo', 'temperature': 1.0, 'batch': 4}",2.0718048438429832

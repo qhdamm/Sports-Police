@@ -43,9 +43,9 @@ These metrics reflect the effectiveness and accuracy of our RAG system in genera
   (follow this: https://medium.com/@vladakuc/compile-opencv-4-7-0-with-ffmpeg-5-compiled-from-the-source-in-ubuntu-434a0bde0ab6)
 - **API Keys:** You need to set up OPENAI_API_KEY in '.env' file
 ### Run the Project
-'''
+```
 python app.py
-'''
+```
 ## Team Members
 @1nhye
 @chaehyun1

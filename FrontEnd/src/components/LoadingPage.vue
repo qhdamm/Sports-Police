@@ -45,14 +45,16 @@
           }
 
           const result = await response.json();
-
+          console.log('Analysis result received:', result);
 
           // Push to OutputPage with the result
           this.$router.push({ // Push to OutputPage with the result
             name: 'OutputPage',
             query: {
               gt_score: result.gt_score,
-              report: result.report
+              report: result.report,
+              document_id: result.document_id,
+              video_name: result.video_name
             }
           });
         } catch (error) {

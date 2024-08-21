@@ -1,49 +1,63 @@
-import argparse
-import pickle
 import os
-from dotenv import load_dotenv
-import openai
-import chromadb
-from chromadb.config import Settings
-import fitz  # PyMuPDF
-from sentence_transformers import SentenceTransformer
-import re
-import pandas as pd
-from rag.rag_utils import *
-from NSAQA.nsaqa import main as nsaqa_main
+import sys
+sys.path.append('./NSAQA')
+import pickle
+from models.detectron2.detectors import get_platform_detector, get_diver_detector, get_splash_detector
+from models.pose_estimator.pose_estimator_model_setup import get_pose_estimation, get_pose_model
+from rule_based_programs.scoring_functions import *
+from score_report_generation.generate_report_functions import *
+from rule_based_programs.aqa_metaProgram import add_difficulty, aqa_metaprogram, abstractSymbols, extract_frames, extract_frames_ocr
+import argparse
+
+def main(video_path):
+    platform_detector = get_platform_detector()
+    splash_detector = get_splash_detector()
+    diver_detector = get_diver_detector()
+    pose_model = get_pose_model()
+    template_path = 'report_template_tables.html'
+    summary_template_path = 'report_summary_template_table.html'
+    dive_data = {}
+
+    frames = extract_frames(video_path)
+    ocr_frames = extract_frames_ocr(video_path)
+    dive_data = abstractSymbols(frames, platform_detector=platform_detector, splash_detector=splash_detector, diver_detector=diver_detector, pose_model=pose_model)
+    dive_data = add_difficulty(ocr_frames, dive_data)   # difficulty 추가 부분
+    dive_data = aqa_metaprogram(frames, dive_data, platform_detector=platform_detector, splash_detector=splash_detector, diver_detector=diver_detector, pose_model=pose_model)
+    
+    intermediate_scores = get_all_report_scores(dive_data)
+    html, html_id = generate_report_from_frames(template_path, intermediate_scores, frames)
+    summary_html, summary_html_id = generate_report_from_frames(summary_template_path, intermediate_scores, frames)
+
+    import os
+    # Define the save path
+    save_directory = "./output"
+    filename = os.path.basename(video_path)
+    
+    save_path_html = os.path.join(save_directory, f"{os.path.splitext(filename)[0]}_report.html")
+    save_path_summary_html = os.path.join(save_directory, f"{os.path.splitext(filename)[0]}_summary_report.html")
+    
+    # Save the main HTML report
+    if not os.path.exists(save_directory):
+        os.makedirs(save_directory)
+    
+    # Save the HTML report
+    with open(save_path_html, 'w') as f:
+        print("Saving HTML report into " + save_path_html)
+        f.write(html)
+    
+    with open(save_path_summary_html, 'w') as f:
+        print("Saving summary HTML report into " + save_path_summary_html)
+        f.write(summary_html)
+        
+    return html_id, save_path_html, summary_html_id, save_path_summary_html
+
+    
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="NSAQA Dive Score Report Generator")
+    parser.add_argument('video_path', type=str, help="Path to the dive video")
+
+    args = parser.parse_args()
+
+    main(args.video_path)
 
 
-
-client = chromadb.PersistentClient()
-load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-
-
-new_parser = argparse.ArgumentParser(description="Extract dive data to be used for scoring.")
-new_parser.add_argument("video_path", type=str, help="Path to dive video (mp4 format).")
-new_parser.add_argument("-d", "--html_info_delete", action="store_true")
-meta_program_args = new_parser.parse_args()
-
-video_path = meta_program_args.video_path
-html_id, save_path_html, summary_html_id, save_path_summary_html = nsaqa_main(video_path)
-with open(save_path_html, 'r') as file:
-    html_content = file.read()
-
-# Start RAG
-db_handler = ChromaDBHandler()
-## pdf file -> db
-pdf_path = './rag/data/Competition-Regulations.pdf'
-store_pdf(pdf_path, db_handler)
-## html file -> db
-text_content = extract_text_from_html(html_content) 
-text_content = preprocess_text(text_content) # 추가 
-embedding = generate_embeddings(text_content)
-db_handler.store_embedding(html_id, text_content, embedding)
-print("Document stored successfully.")
-# Example RAG Query
-response = generate_response_with_rag("Explain the performance analysis.", db_handler)
-print(f"Response: {response}")
-if meta_program_args.html_info_delete:
-    db_handler.delete_document(html_id)
-    print("Document deleted successfully.")

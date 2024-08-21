@@ -16,6 +16,9 @@
 
         <p v-if="answer">Answer: {{ answer }}</p>
       </div>
+
+      <button @click="goHome">Home</button>
+
     </div>
   </template>
   
@@ -26,33 +29,54 @@
   import axios from "axios";
 
   export default {
-    data() {
+    data() { // Initialize data
       return {
         gtScore: null,  // Ground Truth Score
         report: null, // 모델의 HTML report
         question: '',
         answer: '',
+        documentId: null,  // document_id
+        video_name: null,
         qaEnabled: true // 기본적으로 QA 기능 활성화
       };
     },
-    created() {
+    created() { // Get the query parameters to initialize the data
       this.gtScore = this.$route.query.gt_score !== undefined ? parseFloat(this.$route.query.gt_score) : null;
       this.report = this.$route.query.report;
+      this.documentId = this.$route.query.document_id;
+      this.video_name = this.$route.query.video_name;
     },
-    methods: {
+    methods: { // Define methods to handle user interactions
       async submitQuestion() {
         try {
           const response = await axios.post('http://localhost:8000/qa', {
-            question: this.question,
+            user_input: this.question,
+            document_id: this.documentId, // str, gpt_html id
+            video_name: this.video_name // str
           });
+
           this.answer = response.data.answer;
         } catch (error) {
           console.error('Error: ', error);
           alert('Failed to get an answer. Please try again later.');
         }
+      },
+      async goHome() {
+        try {
+          // reset system by calling the backend to delete the document and clear the report
+          const response = await axios.post('http://localhost:8000/home', {
+            document_id: this.documentId
+          });
+          alert(response.data.message);
+          // Redirect to the home page (input page)
+          this.$router.push({ name: 'InputPage' });
+        } catch (error) {
+          console.error('Error: ', error);
+          alert('Failed to reset the system. Please try again later.');
       }
     }
-  };
+  }
+};
   </script>
   
   <style>

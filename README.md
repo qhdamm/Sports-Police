@@ -3,17 +3,18 @@
 <div align="center">
 <h3>YBIGTA DS 2024-Summer Project</h3>
 
-<p>Project on predicting diving scores and servicing the results with RAG</p>
 
-</div>
+<p>Project on predicting diving scores and servicing the results with RAG</p></div>
 
 ## Project Initiation
+
 In sports, biased judgments by referees have long been a source of controversy.  
 To address this issue objectively, we propose the development of an AI-driven service that evaluates the performance of actions during games based on a rule-based system.  
 This service aims to provide users not only with the AI model’s evaluation results but also with a detailed explanation of the scores assigned.  
 By offering transparency in the decision-making process, this tool will enable users to determine whether a referee’s judgment was genuinely biased or fair, thus fostering greater trust and accountability in sports officiating.
 
 ## Core Features
+
 **User Input**: diving video link (YouTube), specify the desired time segment, the actual score
 
 The service will then process the video through a series of steps:
@@ -37,16 +38,39 @@ Our RAG (Retrieval-Augmented Generation) system was implemented using `chatgpt4o
 These metrics reflect the effectiveness and accuracy of our RAG system in generating relevant and faithful responses based on the retrieved context.
 
 ## How to Run
+
 ### Environment Setup
-- **Dependencies Installation:**  `pip install -r requirements.txt`
+
+- **Dependencies Installation**
+  - For Backend, Activate .venv and `pip install -r Backend/requirements.txt`
+  - For NSAQA, Activate another conda env and `pip install -r NSAQA/requirements.txt`
+- **Prerequisite:** `npm --version==10.8.2`
 - **`ffmpeg` Installation:** You have to install `ffmpeg` for video precessing.
   (follow this: https://medium.com/@vladakuc/compile-opencv-4-7-0-with-ffmpeg-5-compiled-from-the-source-in-ubuntu-434a0bde0ab6)
 - **API Keys:** You need to set up OPENAI_API_KEY in '.env' file
+
 ### Run the Project
+
+1. Activate Backend and Frontend module first
+
 ```
-python app.py
+$uvicorn main:app --reload # in ./Backend
 ```
+
+``````
+$npm run serve # in ./Frontend
+``````
+
+2. Run Inference Server module
+
+``````
+$uvicorn app:app —host 0.0.0.0 —port 8090 # in ./NSAQA
+``````
+
+
+
 ## Team Members
+
 @1nhye
 @chaehyun1
 @kjinh

@@ -64,7 +64,7 @@ $npm run serve # in ./Frontend
 2. Run Inference Server module
 
 ``````
-$uvicorn app:app —host 0.0.0.0 —port 8090 # in ./NSAQA
+$uvicorn app:app --host 0.0.0.0 --port 8090 # in ./NSAQA
 ``````
 
 

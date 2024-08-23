@@ -12,9 +12,6 @@ from rule_based_programs.scoring_functions import *
 from score_report_generation.generate_report_functions import *
 from rule_based_programs.aqa_metaProgram import add_difficulty, aqa_metaprogram, abstractSymbols, extract_frames, extract_frames_ocr
 import argparse
-from bs4 import BeautifulSoup
-import openai
-
 
 def main(video_path):
     platform_detector = get_platform_detector()
@@ -38,9 +35,12 @@ def main(video_path):
     import os
     # Define the save path
     save_directory = "./output"
+    filename = os.path.basename(video_path)
+    
+    save_path_html = os.path.join(save_directory, f"{os.path.splitext(filename)[0]}_report.html")
+    save_path_summary_html = os.path.join(save_directory, f"{os.path.splitext(filename)[0]}_summary_report.html")
     
     # Save the main HTML report
-    save_path_html = os.path.join(save_directory, "{}_report.html".format("".join(video_path.split('.')[:-1])))
     if not os.path.exists(save_directory):
         os.makedirs(save_directory)
     
@@ -49,7 +49,6 @@ def main(video_path):
         print("Saving HTML report into " + save_path_html)
         f.write(html)
     
-    save_path_summary_html = os.path.join(save_directory, "{}_summary_report.html".format("".join(video_path.split('.')[:-1])))
     with open(save_path_summary_html, 'w') as f:
         print("Saving summary HTML report into " + save_path_summary_html)
         f.write(summary_html)
@@ -57,6 +56,12 @@ def main(video_path):
     return html_id, save_path_html, summary_html_id, save_path_summary_html
 
     
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="NSAQA Dive Score Report Generator")
+    parser.add_argument('video_path', type=str, help="Path to the dive video")
 
-    
+    args = parser.parse_args()
+
+    main(args.video_path)
+
 

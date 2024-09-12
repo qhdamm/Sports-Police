@@ -70,10 +70,7 @@ $uvicorn app:app --host 0.0.0.0 --port 8090 # in ./NSAQA
 
 
 ## Team Members
-
-@1nhye
-@chaehyun1
-@kjinh
-@qhdamm 
-@imsolsama
-@izayaki22
+|김대솔|김보담|김진형|김채현|박수연|양인혜|
+|:---:|:---:|:---:|:---:|:---:|:---:|
+|<img src="https://avatars.githubusercontent.com/u/155630439?v=4" width="150" height="150">|<img src="https://avatars.githubusercontent.com/u/88372309?v=4" width="150" height="150">|<img src="https://avatars.githubusercontent.com/u/69679512?v=4" width="150" height="150">|<img src="https://avatars.githubusercontent.com/u/108905986?v=4" width="150" height="150">|<img src="https://avatars.githubusercontent.com/u/109861031?v=4" width="150" height="150">|<img src="https://avatars.githubusercontent.com/u/128305836?v=4" width="150" height="150">|
+|[![GitHub Badge](https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github&link=https://github.com/imsolsama)](https://github.com/imsolsama)|[![GitHub Badge](https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github&link=https://github.com/qhdamm)](https://github.com/qhdamm)|[![GitHub Badge](https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github&link=https://github.com/kjinh)](https://github.com/kjinh)|[![GitHub Badge](https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github&link=https://github.com/chaehyun1)](https://github.com/chaehyun1)|[![GitHub Badge](https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github&link=https://github.com/izayaki22)](https://github.com/izayaki22)|[![GitHub Badge](https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github&link=https://github.com/1nhye)](https://github.com/1nhye)|

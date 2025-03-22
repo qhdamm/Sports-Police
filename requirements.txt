@@ -3,6 +3,6 @@ chromadb
 PyMuPDF
 sentence-transformers
 datasets
-gradio
+gradio>5.22.0
 easyocr
 git+https://github.com/facebookresearch/detectron2.git
